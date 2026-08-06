@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { updateBlogSchema } from "../validation/schema";
 import { formatError } from "../../../helpers/formatError";
-import { blogRepository } from "../blogs.repository";
 import { ErrorResponse } from "../../../core";
+import { blogsService } from "../applications/blogs.service";
 
 export async function updateBlogHandler(
   req: Request<{ id: string }>,
@@ -25,7 +25,7 @@ export async function updateBlogHandler(
     return;
   }
 
-  const successUpdatedBlog = await blogRepository.updateBlog(
+  const successUpdatedBlog = await blogsService.updateBlogById(
     id,
     validateResult.data,
   );

@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { blogsService } from "../applications/blogs.service";
+import { blogsQueryRepository } from "../repositories/blogsQuery.repository";
 import { mapMongoBlogToResponse } from "../blogs.mappers";
 import { GetBlogsInputQuery } from "../types/input";
 import { mapToPaginatedOutput } from "../../../helpers/paginateData";
@@ -17,7 +17,7 @@ export async function getBlogsHandler(
     sortDirection: req.query.sortDirection,
   };
 
-  const blogs = await blogsService.getBlogs(paramsArgs);
+  const blogs = await blogsQueryRepository.getAllBlogs(paramsArgs);
 
   const paginatedBlogs = mapToPaginatedOutput(
     blogs,

@@ -4,6 +4,7 @@ import { GetPostsOutput } from "../../posts/types/output";
 import { blogsService } from "../applications/blogs.service";
 import { mapToPaginatedOutput } from "../../../helpers/paginateData";
 import { mapMongoPostToResponse } from "../../posts/posts.mappers";
+import { blogsQueryRepository } from "../repositories/blogsQuery.repository";
 
 export async function getPostsByBlogIdHandler(
   req: Request<{ blogId: string }, {}, {}, PaginationParams>,
@@ -11,7 +12,7 @@ export async function getPostsByBlogIdHandler(
 ) {
   const { blogId } = req.params;
 
-  const isBlogExists = await blogsService.getBlogById(blogId);
+  const isBlogExists = await blogsQueryRepository.getBlogById(blogId);
   if (!isBlogExists?._id) {
     console.log("not found blog id");
     res.status(404).send("not found blog id");

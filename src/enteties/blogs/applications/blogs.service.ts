@@ -1,16 +1,13 @@
 import { BlogWithMongoId } from "../types";
-import { blogRepository } from "../blogs.repository";
+import { blogRepository } from "../repositories/blogs.repository";
 import { postsService } from "../../posts/applications/posts.service";
 import { PostWithMongoId } from "../../posts/types";
 import { PaginationParams } from "../../../core";
 import { CreatePostDTO } from "../../posts/types/dto";
-import { GetBlogsInputQuery } from "../types/input";
 import { CreateBlogDTO } from "../types/dto";
 
 interface BlogsService {
-  getBlogs: (params: GetBlogsInputQuery) => Promise<BlogWithMongoId[]>;
   createBlog: (data: CreateBlogDTO) => Promise<BlogWithMongoId>;
-  getBlogById: (id: string) => Promise<BlogWithMongoId | null>;
   deleteBlogById: (id: string) => Promise<boolean>;
   getPostsByBlogId: (
     blogId: string,
@@ -21,14 +18,6 @@ interface BlogsService {
 }
 
 export const blogsService: BlogsService = {
-  getBlogs: async function (params: GetBlogsInputQuery) {
-    const blogs = await blogRepository.getAllBlogs(params);
-    return blogs;
-  },
-  getBlogById: async function (id: string) {
-    const blog = await blogRepository.getBlogById(id);
-    return blog;
-  },
   createBlog: async function (data: CreateBlogDTO) {
     const blog = await blogRepository.createBlog(data);
     return blog;
