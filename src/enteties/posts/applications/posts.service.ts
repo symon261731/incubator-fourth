@@ -1,8 +1,8 @@
-import { blogsService } from "../../blogs/applications/blogs.service";
 import { CreatePostDTO, UpdatePostDTO } from "../types/dto";
 import { Post, PostWithMongoId } from "../types";
 import { postRepository } from "../posts.repository";
 import { PaginationParams } from "../../../core";
+import { blogsQueryRepository } from "../../blogs/repositories/blogsQuery.repository";
 
 interface PostsService {
   getAllPosts: (params: PaginationParams) => Promise<PostWithMongoId[]>;
@@ -30,7 +30,7 @@ export const postsService: PostsService = {
     return post;
   },
   createPost: async function (post: CreatePostDTO) {
-    const blog = await blogsService.getBlogById(post.blogId);
+    const blog = await blogsQueryRepository.getBlogById(post.blogId);
 
     const newPost: Post = {
       title: post.title,
