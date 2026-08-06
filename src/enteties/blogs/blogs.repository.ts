@@ -1,21 +1,31 @@
-import { ObjectId } from "mongodb";
+import { Filter, ObjectId, Sort } from "mongodb";
 import { blogsCollection } from "../../db/collections";
 import type { BlogUpdateDTO, CreateBlogDTO } from "./types/dto";
-import { Blog, BlogWithId } from "./types";
+import { Blog, BlogWithMongoId } from "./types";
+import { GetBlogsInputQuery } from "./types/input";
 
 interface BlogRepository {
-  getAllBlogs: () => Promise<BlogWithId[]>;
-  getBlogById: (id: string) => Promise<BlogWithId | null>;
-  createBlog: (blog: CreateBlogDTO) => Promise<BlogWithId>;
+  getAllBlogs: (params: GetBlogsInputQuery) => Promise<BlogWithMongoId[]>;
+  getBlogById: (id: string) => Promise<BlogWithMongoId | null>;
+  createBlog: (blog: CreateBlogDTO) => Promise<BlogWithMongoId>;
   updateBlog: (id: string, blog: BlogUpdateDTO) => Promise<boolean>;
   deleteBlog: (id: string) => Promise<boolean>;
   deleteAllBlogs: () => Promise<boolean>;
 }
 
 export const blogRepository: BlogRepository = {
-  getAllBlogs: async () => {
-    return blogsCollection.find().toArray();
+  getAllBlogs: async (params: GetBlogsInputQuery) => {
+    const filter: Filter<Blog> = params.searchNameTerm
+      ? { name: { $regex: params.searchNameTerm, $options: "i" } }
+      : {};
+
+    return blogsCollection
+      .find(filter, {
+        sort: { [params.sortBy]: params.sortDirection === "asc" ? 1 : -1 },
+      })
+      .toArray();
   },
+
   createBlog: async (blog: CreateBlogDTO) => {
     const newBlog: Blog = {
       isMembership: false,

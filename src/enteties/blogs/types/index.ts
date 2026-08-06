@@ -1,4 +1,5 @@
 import { WithId } from "mongodb";
+import { PaginationParams } from "../../../core";
 
 export interface Blog {
   name: string;
@@ -7,8 +8,8 @@ export interface Blog {
   createdAt: string;
   isMembership?: boolean;
 }
-export interface BlogResponse extends Blog {
+export interface BlogWithId extends Blog {
   id: string;
 }
 
-export type BlogWithId = WithId<Blog>;
+export type BlogWithMongoId = WithId<Blog>;

@@ -1,6 +1,5 @@
 import { Post } from ".";
 
-
 export type CreatePostDTO = Omit<Post, "createdAt" | "blogName">;
 
 export interface UpdatePostDTO {
@@ -9,5 +8,3 @@ export interface UpdatePostDTO {
   content: string;
   blogId: string;
 }
-
-

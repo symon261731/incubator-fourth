@@ -1,10 +1,10 @@
-import { BlogResponse, BlogWithId } from "./types";
+import { BlogWithId, BlogWithMongoId } from "./types";
 
-export function mapMongoBlogToResponse(blog: BlogWithId): BlogResponse {
-    const { _id, ...rest } = blog;
+export function mapMongoBlogToResponse(blog: BlogWithMongoId): BlogWithId {
+  const { _id, ...rest } = blog;
 
-    return {
-        ...rest,
-        id: _id.toString(),
-    }
+  return {
+    ...rest,
+    id: _id.toString(),
+  };
 }

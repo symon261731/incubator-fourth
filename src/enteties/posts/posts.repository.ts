@@ -1,41 +1,43 @@
-import {
-  UpdatePostDTO,
-  CreatePostDTO,
-  Post,
-  PostWithId,
-} from "./posts.service";
-import { blogsCollection, postsCollection } from "../../db/collections";
-import { ObjectId } from "mongodb";
+import { Post, PostWithMongoId } from "./types";
+import { UpdatePostDTO } from "./types/dto";
+import { postsCollection } from "../../db/collections";
+import { ObjectId, Sort } from "mongodb";
+import { PaginationParams } from "../../core";
 
 interface PostRepository {
-  getAllPosts: () => Promise<PostWithId[]>;
-  createPost: (post: CreatePostDTO) => Promise<PostWithId>;
-  getPostById: (id: string) => Promise<PostWithId | null>;
+  getAllPosts: (params: PaginationParams) => Promise<PostWithMongoId[]>;
+  getPostsByBlogId: (
+    blogId: string,
+    params: PaginationParams,
+  ) => Promise<PostWithMongoId[]>;
+  createPost: (post: Post) => Promise<PostWithMongoId>;
+  getPostById: (id: string) => Promise<PostWithMongoId | null>;
   updatePost: (id: string, post: UpdatePostDTO) => Promise<boolean>;
   deletePost: (id: string) => Promise<boolean>;
   deleteAllPosts: () => Promise<boolean>;
 }
 
 export const postRepository: PostRepository = {
-  getAllPosts: async () => {
-    const result = await postsCollection.find().toArray();
-    return result;
-  },
-
-  createPost: async (post: CreatePostDTO) => {
-    const blog = await blogsCollection.findOne({
-      _id: new ObjectId(post.blogId),
-    });
-
-    const newPost: Post = {
-      createdAt: new Date().toISOString(),
-      ...post,
-      blogName: blog?.name || "",
+  getAllPosts: async (params: PaginationParams) => {
+    const sort: Sort = {
+      [params.sortBy]: params.sortDirection === "asc" ? 1 : -1,
     };
 
-    const result = await postsCollection.insertOne(newPost);
+    const result = await postsCollection.find().sort(sort).toArray();
+    return result;
+  },
+  getPostsByBlogId: async (blogId, params) => {
+    const posts = await postsCollection
+      .find({ blogId })
+      .sort({ [params.sortBy]: params.sortDirection === "asc" ? 1 : -1 });
 
-    return { ...newPost, _id: result.insertedId };
+    return posts.toArray();
+  },
+
+  createPost: async (post: Post) => {
+    const result = await postsCollection.insertOne(post);
+
+    return { ...post, _id: result.insertedId };
   },
   getPostById: async (id: string) => {
     const post = await postsCollection.findOne({ _id: new ObjectId(id) });

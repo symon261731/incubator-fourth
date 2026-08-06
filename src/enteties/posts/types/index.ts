@@ -9,8 +9,8 @@ export interface Post {
   blogName: string;
 }
 
-export interface PostResponse extends Post {
+export interface PostWithId extends Post {
   id: string;
 }
 
-export type PostWithId = WithId<Post>;
+export type PostWithMongoId = WithId<Post>;
